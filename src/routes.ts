@@ -12,6 +12,11 @@ router.post('/auth/signin', authController.userSignInController);
 
 //user-profile - required auth
 router.get('/user/:id', authenticateToken, userController.getUserController);
-router.put('/user', userController.updateUserController);
+router.put('/user', authenticateToken, userController.updateUserController);
+router.delete(
+  '/user/:id',
+  authenticateToken,
+  userController.deleteUserController
+);
 
 export default router;

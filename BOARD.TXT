@@ -1,4 +1,1 @@
-1 - criar as validações pelo "dto"
-2 - enviar lastName como null no created do usuário
-3 - revisar a tipagem de todos os responses do projeto
-4 - criar deleteAccount
+1 - criar crud das tarefas

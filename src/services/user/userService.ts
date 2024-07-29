@@ -123,3 +123,43 @@ export async function updateUserAsync(req: Request, res: Response) {
     });
   }
 }
+
+export async function deleteUserAsync(req: Request, res: Response) {
+  try {
+    const userId = req.params.id;
+
+    if (!userId) {
+      return errorResponseModel({
+        req,
+        res,
+        status: statusCodeEnum.BAD_REQUEST,
+        message: 'Required user id params',
+      });
+    }
+
+    const userDeleted = await userModel.findOneAndDelete({ id: userId });
+
+    if (!userDeleted) {
+      return errorResponseModel({
+        req,
+        res,
+        status: statusCodeEnum.NOT_FOUND,
+        message: 'Not found user',
+      });
+    }
+
+    return responseModel({
+      req,
+      res,
+      status: statusCodeEnum.SUCCESS,
+      content: 'User deleted with success',
+    });
+  } catch (err) {
+    return errorResponseModel({
+      req,
+      res,
+      status: statusCodeEnum.INTERNAL_SERVER_ERRO,
+      message: 'deleteUserAsync|${err}',
+    });
+  }
+}

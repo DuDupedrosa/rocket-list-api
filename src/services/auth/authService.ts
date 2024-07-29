@@ -83,7 +83,7 @@ export async function userRegisterAsync(req: Request, res: Response) {
 
     // generate user token
     const token = jwt.sign({ userId: newUser.id, email: email }, jwtSecretKey, {
-      expiresIn: '1h',
+      expiresIn: '30min',
     });
 
     // create response's object
@@ -146,7 +146,7 @@ export async function userSignInAsync(req: Request, res: Response) {
 
     // generate user token
     const token = jwt.sign({ userId: user.id, email: email }, jwtSecretKey, {
-      expiresIn: '1h',
+      expiresIn: '30min',
     });
 
     const response: UserSignInResponseDto = {
