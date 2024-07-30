@@ -9,22 +9,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserController = getUserController;
-exports.updateUserController = updateUserController;
-exports.deleteUserController = deleteUserController;
-const userService_1 = require("../../services/user/userService");
-function getUserController(req, res) {
+exports.createTaskController = createTaskController;
+exports.getTaskByUserIdController = getTaskByUserIdController;
+const taskService_1 = require("../../services/task/taskService");
+function createTaskController(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield (0, userService_1.getUserAsync)(req, res);
+        yield (0, taskService_1.createTaskAsync)(req, res);
     });
 }
-function updateUserController(req, res) {
+function getTaskByUserIdController(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield (0, userService_1.updateUserAsync)(req, res);
-    });
-}
-function deleteUserController(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield (0, userService_1.deleteUserAsync)(req, res);
+        yield (0, taskService_1.getTaskByUserIdAsync)(req, res);
     });
 }

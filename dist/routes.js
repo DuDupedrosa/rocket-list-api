@@ -29,6 +29,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const authController = __importStar(require("./controllers/auth/authController"));
 const userController = __importStar(require("./controllers/user/userController"));
+const taskController = __importStar(require("./controllers/task/taskController"));
 const validateTokenMiddleware_1 = require("./middleware/validateTokenMiddleware");
 //
 const router = express_1.default.Router();
@@ -37,5 +38,9 @@ router.post('/auth/register', authController.userRegisterController);
 router.post('/auth/signin', authController.userSignInController);
 //user-profile - required auth
 router.get('/user/:id', validateTokenMiddleware_1.authenticateToken, userController.getUserController);
-router.put('/user', userController.updateUserController);
+router.put('/user', validateTokenMiddleware_1.authenticateToken, userController.updateUserController);
+router.delete('/user/:id', validateTokenMiddleware_1.authenticateToken, userController.deleteUserController);
+//tasks
+router.post('/task', validateTokenMiddleware_1.authenticateToken, taskController.createTaskController);
+router.get('/task/:userId', validateTokenMiddleware_1.authenticateToken, taskController.getTaskByUserIdController);
 exports.default = router;

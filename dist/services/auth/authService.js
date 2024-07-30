@@ -65,7 +65,7 @@ function userRegisterAsync(req, res) {
                 name,
                 password: hashedPassword,
                 id: (0, uuid_1.v4)(),
-                lastName,
+                lastName: lastName ? lastName : null,
             };
             // case uuid don't generate the user id
             if (!newUser.id) {
@@ -80,7 +80,7 @@ function userRegisterAsync(req, res) {
             const createdUser = yield userModel_1.default.create(newUser);
             // generate user token
             const token = jsonwebtoken_1.default.sign({ userId: newUser.id, email: email }, jwtSecretKey, {
-                expiresIn: '1h',
+                expiresIn: '30min',
             });
             // create response's object
             const response = {
@@ -136,7 +136,7 @@ function userSignInAsync(req, res) {
             }
             // generate user token
             const token = jsonwebtoken_1.default.sign({ userId: user.id, email: email }, jwtSecretKey, {
-                expiresIn: '1h',
+                expiresIn: '30min',
             });
             const response = {
                 user: {

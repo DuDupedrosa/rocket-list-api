@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUserAsync = getUserAsync;
 exports.updateUserAsync = updateUserAsync;
+exports.deleteUserAsync = deleteUserAsync;
 const userModel_1 = __importDefault(require("../../models/user/userModel"));
 const StatusCodeEnum_1 = require("../../helpers/enums/StatusCodeEnum");
 const responseModel_1 = require("../../helpers/methods/responseModel");
@@ -116,6 +117,44 @@ function updateUserAsync(req, res) {
                 res,
                 status: StatusCodeEnum_1.statusCodeEnum.INTERNAL_SERVER_ERRO,
                 message: `updateUserAsync|${err}`,
+            });
+        }
+    });
+}
+function deleteUserAsync(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const userId = req.params.id;
+            if (!userId) {
+                return (0, responseModel_1.errorResponseModel)({
+                    req,
+                    res,
+                    status: StatusCodeEnum_1.statusCodeEnum.BAD_REQUEST,
+                    message: 'Required user id params',
+                });
+            }
+            const userDeleted = yield userModel_1.default.findOneAndDelete({ id: userId });
+            if (!userDeleted) {
+                return (0, responseModel_1.errorResponseModel)({
+                    req,
+                    res,
+                    status: StatusCodeEnum_1.statusCodeEnum.NOT_FOUND,
+                    message: 'Not found user',
+                });
+            }
+            return (0, responseModel_1.responseModel)({
+                req,
+                res,
+                status: StatusCodeEnum_1.statusCodeEnum.SUCCESS,
+                content: 'User deleted with success',
+            });
+        }
+        catch (err) {
+            return (0, responseModel_1.errorResponseModel)({
+                req,
+                res,
+                status: StatusCodeEnum_1.statusCodeEnum.INTERNAL_SERVER_ERRO,
+                message: 'deleteUserAsync|${err}',
             });
         }
     });

@@ -65,7 +65,7 @@ export async function userRegisterAsync(req: Request, res: Response) {
       name,
       password: hashedPassword,
       id: uuidv4(),
-      lastName,
+      lastName: lastName ? lastName : null,
     };
 
     // case uuid don't generate the user id

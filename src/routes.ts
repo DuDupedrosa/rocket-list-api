@@ -1,6 +1,7 @@
 import express from 'express';
 import * as authController from './controllers/auth/authController';
 import * as userController from './controllers/user/userController';
+import * as taskController from './controllers/task/taskController';
 import { authenticateToken } from './middleware/validateTokenMiddleware';
 
 //
@@ -17,6 +18,14 @@ router.delete(
   '/user/:id',
   authenticateToken,
   userController.deleteUserController
+);
+
+//tasks
+router.post('/task', authenticateToken, taskController.createTaskController);
+router.get(
+  '/task/:userId',
+  authenticateToken,
+  taskController.getTaskByUserIdController
 );
 
 export default router;
