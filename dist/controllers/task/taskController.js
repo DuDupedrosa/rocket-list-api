@@ -11,6 +11,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createTaskController = createTaskController;
 exports.getTaskByUserIdController = getTaskByUserIdController;
+exports.updateTaskController = updateTaskController;
+exports.deleteTaskController = deleteTaskController;
 const taskService_1 = require("../../services/task/taskService");
 function createTaskController(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -20,5 +22,15 @@ function createTaskController(req, res) {
 function getTaskByUserIdController(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         yield (0, taskService_1.getTaskByUserIdAsync)(req, res);
+    });
+}
+function updateTaskController(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield (0, taskService_1.updateTaskAsync)(req, res);
+    });
+}
+function deleteTaskController(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield (0, taskService_1.deleteTaskAsync)(req, res);
     });
 }

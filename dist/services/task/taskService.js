@@ -14,6 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createTaskAsync = createTaskAsync;
 exports.getTaskByUserIdAsync = getTaskByUserIdAsync;
+exports.updateTaskAsync = updateTaskAsync;
+exports.deleteTaskAsync = deleteTaskAsync;
 const createTaskValidatorSchema_1 = require("../../validatorSchemas/task/createTaskValidatorSchema");
 const validatorSchemaResponse_1 = require("../../helpers/methods/validatorSchemaResponse");
 const userModel_1 = __importDefault(require("../../models/user/userModel"));
@@ -21,6 +23,7 @@ const responseModel_1 = require("../../helpers/methods/responseModel");
 const StatusCodeEnum_1 = require("../../helpers/enums/StatusCodeEnum");
 const uuid_1 = require("uuid");
 const taskModel_1 = require("../../models/task/taskModel");
+const updateTaskValidatorSchema_1 = require("../../validatorSchemas/task/updateTaskValidatorSchema");
 function createTaskAsync(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -109,6 +112,119 @@ function getTaskByUserIdAsync(req, res) {
                 res,
                 status: StatusCodeEnum_1.statusCodeEnum.INTERNAL_SERVER_ERRO,
                 message: `getTaskByStatusAsync|${err}`,
+            });
+        }
+    });
+}
+function updateTaskAsync(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { error } = updateTaskValidatorSchema_1.updateTaskValidatorSchema.validate(req.body);
+            if (error) {
+                return (0, validatorSchemaResponse_1.validatorSchemaResponse)({ req, res, error });
+            }
+            const { userId, id, value, status } = req.body;
+            const task = yield taskModel_1.taskModel.findOne({ id });
+            if (!task) {
+                return (0, responseModel_1.errorResponseModel)({
+                    req,
+                    res,
+                    status: StatusCodeEnum_1.statusCodeEnum.NOT_FOUND,
+                    message: 'Not found task by id or br user id',
+                });
+            }
+            // validando se o usuário não está tentando editar a task de outro usuário
+            if (task.userId !== userId) {
+                return (0, responseModel_1.errorResponseModel)({
+                    req,
+                    res,
+                    status: StatusCodeEnum_1.statusCodeEnum.UNAUTHORIZED,
+                    message: `User not allowed to do this action`,
+                });
+            }
+            const updatedTask = yield taskModel_1.taskModel.findOneAndUpdate({ id }, {
+                value,
+                status,
+                updateAt: new Date(),
+            }, { runValidators: true, new: true });
+            if (!updatedTask) {
+                return (0, responseModel_1.errorResponseModel)({
+                    req,
+                    res,
+                    status: StatusCodeEnum_1.statusCodeEnum.INTERNAL_SERVER_ERRO,
+                    message: `updateTaskAsync|ErrorOnUpdateTaskModel`,
+                });
+            }
+            let response = {
+                id,
+                value: updatedTask.value,
+                status: updatedTask.status,
+                updateAt: updatedTask.updateAt,
+                createdAt: updatedTask.createdAt,
+                createdBy: updatedTask.createdBy,
+                updateBy: updatedTask.updateBy,
+            };
+            return (0, responseModel_1.responseModel)({
+                req,
+                res,
+                status: StatusCodeEnum_1.statusCodeEnum.SUCCESS,
+                content: response,
+            });
+        }
+        catch (err) {
+            return (0, responseModel_1.errorResponseModel)({
+                req,
+                res,
+                status: StatusCodeEnum_1.statusCodeEnum.INTERNAL_SERVER_ERRO,
+                message: `updateTaskAsync|${err}`,
+            });
+        }
+    });
+}
+function deleteTaskAsync(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { id, userId } = req.params;
+            const task = yield taskModel_1.taskModel.findOne({ id });
+            if (!task) {
+                return (0, responseModel_1.errorResponseModel)({
+                    req,
+                    res,
+                    status: StatusCodeEnum_1.statusCodeEnum.NOT_FOUND,
+                    message: 'Not found task by id',
+                });
+            }
+            // validando se o usuário não está tentando deletar a task de outro usuário
+            if (task.userId !== userId) {
+                return (0, responseModel_1.errorResponseModel)({
+                    req,
+                    res,
+                    status: StatusCodeEnum_1.statusCodeEnum.UNAUTHORIZED,
+                    message: `User not allowed to do this action`,
+                });
+            }
+            const deletedTask = yield taskModel_1.taskModel.findOneAndDelete({ id });
+            if (!deletedTask) {
+                return (0, responseModel_1.errorResponseModel)({
+                    req,
+                    res,
+                    status: StatusCodeEnum_1.statusCodeEnum.INTERNAL_SERVER_ERRO,
+                    message: 'deleteTaskAsync|ErrorOnDeleteTaskModel',
+                });
+            }
+            return (0, responseModel_1.responseModel)({
+                req,
+                res,
+                status: StatusCodeEnum_1.statusCodeEnum.SUCCESS,
+                content: '',
+            });
+        }
+        catch (err) {
+            return (0, responseModel_1.errorResponseModel)({
+                req,
+                res,
+                status: StatusCodeEnum_1.statusCodeEnum.INTERNAL_SERVER_ERRO,
+                message: `deleteTaskAsync|${err}`,
             });
         }
     });

@@ -8,3 +8,13 @@ export type CreateTaskDto = {
   updateAt: Date;
   updateBy: string;
 };
+
+export type UpdatedTaskResponseDto = {
+  id: string;
+  value: string;
+  status: number;
+  createdAt: Date;
+  createdBy: string;
+  updateAt: Date;
+  updateBy: string;
+};

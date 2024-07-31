@@ -20,6 +20,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const helmet_1 = __importDefault(require("helmet"));
 const express_session_1 = __importDefault(require("express-session"));
 require("reflect-metadata");
+const swagger_1 = require("./swagger");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = process.env.PORT || 3000;
@@ -44,6 +45,7 @@ app.use((0, express_session_1.default)({
     cookie: { secure: true, httpOnly: true, expires: expiryDate },
 }));
 app.use(routes_1.default);
+(0, swagger_1.setupSwagger)(app);
 app.listen(port, () => {
     console.log(`[server]: Server is running at http://localhost:${port}`);
 });

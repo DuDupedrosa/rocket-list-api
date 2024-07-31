@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 import helmet from 'helmet';
 import session from 'express-session';
 import 'reflect-metadata';
+import { setupSwagger } from './swagger';
 
 dotenv.config();
 
@@ -20,7 +21,6 @@ async function main() {
 }
 
 main().catch((err) => console.log(err));
-
 app.use(helmet());
 app.disable('x-powered-by');
 app.use(express.json());
@@ -34,6 +34,7 @@ app.use(
   })
 );
 app.use(router);
+setupSwagger(app);
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
 });
