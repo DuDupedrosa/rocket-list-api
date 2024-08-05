@@ -9,8 +9,21 @@ const router = express.Router();
 
 /**
  * @swagger
+ * tags:
+ *   - name: Auth
+ *     description: Rotas de autenticação
+ *   - name: User
+ *     description: Rotas de usuário
+ *   - name: Task
+ *     description: Rotas de tarefas
+ */
+
+/**
+ * @swagger
  * /auth/register:
  *   post:
+ *     tags:
+ *       - Auth
  *     summary: Registra um novo usuário
  *     requestBody:
  *       required: true
@@ -19,9 +32,9 @@ const router = express.Router();
  *           schema:
  *             type: object
  *             required:
- *              - name
- *              - password
- *              - email
+ *               - name
+ *               - password
+ *               - email
  *             properties:
  *               name:
  *                 type: string
@@ -38,6 +51,26 @@ const router = express.Router();
  *     responses:
  *       201:
  *         description: Usuário registrado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   example: "jsonwebtoken"
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     name:
+ *                       type: string
+ *                       example: "johndoe"
+ *                     email:
+ *                       type: string
+ *                       example: "johndoe@example.com"
+ *                     id:
+ *                       type: string
+ *                       example: "userId"
  *       400:
  *         description: Erro na requisição (validação dos dados)
  *       500:
@@ -49,6 +82,8 @@ router.post('/auth/register', authController.userRegisterController);
  * @swagger
  * /auth/signin:
  *   post:
+ *     tags:
+ *       - Auth
  *     summary: Efetuar login
  *     requestBody:
  *       required: true
@@ -69,6 +104,30 @@ router.post('/auth/register', authController.userRegisterController);
  *     responses:
  *       200:
  *         description: Usuário logado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   example: "jsonwebtoken"
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     name:
+ *                       type: string
+ *                       example: "johndoe"
+ *                     email:
+ *                       type: string
+ *                       example: "johndoe@example.com"
+ *                     id:
+ *                       type: string
+ *                       example: "userId"
+ *                     lastName:
+ *                       type: string
+ *                       nullable: true
+ *                       example: "lastName"
  *       400:
  *         description: Erro na requisição (validação dos dados)
  *       404:
@@ -82,6 +141,8 @@ router.post('/auth/signin', authController.userSignInController);
  * @swagger
  * /user/{id}:
  *   get:
+ *     tags:
+ *       - User
  *     summary: Consultar os dados do usuário pelo id
  *     parameters:
  *       - in: path
@@ -111,6 +172,8 @@ router.post('/auth/signin', authController.userSignInController);
  *                   example: "lastName"
  *       404:
  *         description: Usuário não encontrado
+ *       401:
+ *         description: Não autorizado
  *       500:
  *         description: Erro interno
  */
@@ -121,6 +184,8 @@ router.get('/user/:id', authenticateToken, userController.getUserController);
  * @swagger
  * /user:
  *   put:
+ *     tags:
+ *       - User
  *     summary: Editar os dados do usuário
  *     requestBody:
  *       required: true
@@ -148,10 +213,29 @@ router.get('/user/:id', authenticateToken, userController.getUserController);
  *     responses:
  *       200:
  *         description: Dados atualizados com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   example: "taskId"
+ *                 name:
+ *                   type: string
+ *                   example: "johndoe"
+ *                 email:
+ *                   type: string
+ *                   example: "johndoe@example.com"
+ *                 lastName:
+ *                   type: string
+ *                   example: "lastName"
  *       400:
  *         description: Erro na requisição (validação dos dados)
  *       404:
  *         description: Usuário (userId) não encontrado
+ *       401:
+ *         description: Não autorizado
  *       500:
  *         description: Erro interno
  */
@@ -161,6 +245,8 @@ router.put('/user', authenticateToken, userController.updateUserController);
  * @swagger
  * /user/{id}:
  *   delete:
+ *     tags:
+ *       - User
  *     summary: Deletar a conta do usuário
  *     parameters:
  *       - in: path
@@ -173,6 +259,8 @@ router.put('/user', authenticateToken, userController.updateUserController);
  *         description: Usuário deletado com sucesso
  *       404:
  *         description: Usuário (userId) não encontrado
+ *       401:
+ *         description: Não autorizado
  *       500:
  *         description: Erro interno
  */
@@ -186,6 +274,8 @@ router.delete(
  * @swagger
  * /task:
  *   post:
+ *     tags:
+ *       - Task
  *     summary: Criar uma nova tarefa
  *     requestBody:
  *       required: true
@@ -213,12 +303,46 @@ router.delete(
  *     responses:
  *       201:
  *         description: Task criada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   example: "taskId"
+ *                 userId:
+ *                   type: string
+ *                   example: "userId"
+ *                 value:
+ *                   type: string
+ *                   example: "This is a task"
+ *                 status:
+ *                   type: integer
+ *                   enum: [1, 2]
+ *                   example: 1
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2023-08-01T12:34:56Z"
+ *                 createdBy:
+ *                   type: string
+ *                   example: "creatorUserId"
+ *                 updateAt:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2023-08-02T12:34:56Z"
+ *                 updateBy:
+ *                   type: string
+ *                   example: "updaterUserId"
  *       400:
  *         description: Erro na requisição (validação dos dados)
  *       401:
  *         description: Não autorizado
  *       404:
  *         description: Usuário não encontrado (para o userId passado)
+ *       500:
+ *         description: Erro interno
  */
 router.post('/task', authenticateToken, taskController.createTaskController);
 
@@ -226,6 +350,8 @@ router.post('/task', authenticateToken, taskController.createTaskController);
  * @swagger
  * /task/{id}:
  *   get:
+ *     tags:
+ *       - Task
  *     summary: Consultar os dados da tarefa pelo id
  *     parameters:
  *       - in: path
@@ -278,6 +404,10 @@ router.post('/task', authenticateToken, taskController.createTaskController);
  *                   example: "updaterUserId"
  *       404:
  *         description: Tarefa não encontrada
+ *       401:
+ *         description: Não autorizado
+ *       500:
+ *         description: Erro interno
  */
 router.get(
   '/task/:userId',
@@ -289,6 +419,8 @@ router.get(
  * @swagger
  * /task:
  *   put:
+ *     tags:
+ *       - Task
  *     summary: Editar uma tarefa
  *     requestBody:
  *       required: true
@@ -320,12 +452,43 @@ router.get(
  *     responses:
  *       200:
  *         description: Task atualizada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   example: "taskId"
+ *                 value:
+ *                   type: string
+ *                   example: "This is a task"
+ *                 status:
+ *                   type: integer
+ *                   enum: [1, 2]
+ *                   example: 1
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2023-08-01T12:34:56Z"
+ *                 createdBy:
+ *                   type: string
+ *                   example: "creatorUserId"
+ *                 updateAt:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2023-08-02T12:34:56Z"
+ *                 updateBy:
+ *                   type: string
+ *                   example: "updaterUserId"
  *       400:
  *         description: Erro na requisição (validação dos dados)
  *       401:
  *         description: Não autorizado
  *       404:
  *         description: Tarefa não encontrada
+ *       500:
+ *         description: Erro interno
  */
 router.put('/task', authenticateToken, taskController.updateTaskController);
 
@@ -333,6 +496,8 @@ router.put('/task', authenticateToken, taskController.updateTaskController);
  * @swagger
  * /task/{id}/{userId}:
  *   delete:
+ *     tags:
+ *       - Task
  *     summary: Deletar uma tarefa
  *     parameters:
  *       - in: path
@@ -354,6 +519,8 @@ router.put('/task', authenticateToken, taskController.updateTaskController);
  *         description: Tarefa não encontrada
  *       401:
  *         description: Não autorizado
+ *       500:
+ *         description: Erro interno
  */
 router.delete(
   '/task/:id/:userId',
