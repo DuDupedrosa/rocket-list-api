@@ -15,6 +15,11 @@ const app: Express = express();
 const port = process.env.PORT || 3000;
 const mongooseConnection = process.env.PRIVATE_MONGOOSE_CONNECTION;
 const expiryDate = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+const allowlist = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'https://rocket-list.vercel.app',
+];
 
 async function main() {
   if (!mongooseConnection) return;
@@ -34,7 +39,20 @@ app.use(
     cookie: { secure: true, httpOnly: true, expires: expiryDate },
   })
 );
-app.use(cors());
+//app.use(cors());
+
+const corsOptionsDelegate = (req: any, callback: any) => {
+  let corsOptions;
+  if (allowlist.indexOf(req.header('Origin')) !== -1) {
+    corsOptions = { origin: true }; // reflect (enable) the requested origin in the CORS response
+  } else {
+    corsOptions = { origin: false }; // disable CORS for this request
+  }
+  callback(null, corsOptions); // callback expects two parameters: error and options
+};
+
+app.use(cors(corsOptionsDelegate));
+
 app.use(router);
 setupSwagger(app);
 app.listen(port, () => {
