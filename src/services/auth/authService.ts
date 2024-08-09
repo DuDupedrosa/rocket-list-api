@@ -36,13 +36,25 @@ export async function userRegisterAsync(req: Request, res: Response) {
 
     const { email, name, password, lastName } = req.body;
 
+    const alreadyRegisterEmail = await userModel.findOne({ email });
+
+    // validando se já existe um usuário com o email informado
+    if (alreadyRegisterEmail) {
+      return errorResponseModel({
+        req,
+        res,
+        status: statusCodeEnum.BAD_REQUEST,
+        message: 'email_already_register',
+      });
+    }
+
     // validating email
     if (!validateEmail(email)) {
       return errorResponseModel({
         req,
         res,
         status: statusCodeEnum.BAD_REQUEST,
-        message: 'Invalid e-mail.',
+        message: 'invalid_email',
       });
     }
 
@@ -74,7 +86,7 @@ export async function userRegisterAsync(req: Request, res: Response) {
         req,
         res,
         status: statusCodeEnum.BAD_REQUEST,
-        message: 'A user id is required',
+        message: 'user_id_required',
       });
     }
 
@@ -128,7 +140,7 @@ export async function userSignInAsync(req: Request, res: Response) {
       return errorResponseModel({
         req,
         res,
-        message: 'Invalid e-mail or password.',
+        message: 'invalid_email_or_password',
         status: statusCodeEnum.NOT_FOUND,
       });
     }
@@ -139,7 +151,7 @@ export async function userSignInAsync(req: Request, res: Response) {
       return errorResponseModel({
         req,
         res,
-        message: 'Invalid e-mail or password.',
+        message: 'invalid_email_or_password',
         status: statusCodeEnum.NOT_FOUND,
       });
     }
