@@ -11,6 +11,7 @@ import { CreateTaskDto, UpdatedTaskResponseDto } from '../../dtos/task';
 import { v4 as uuidv4 } from 'uuid';
 import { taskModel } from '../../models/task/taskModel';
 import { updateTaskValidatorSchema } from '../../validatorSchemas/task/updateTaskValidatorSchema';
+import { taskStatusEnum } from '../../helpers/enums/TaskEnum';
 
 export async function createTaskAsync(req: Request, res: Response) {
   try {
@@ -32,6 +33,23 @@ export async function createTaskAsync(req: Request, res: Response) {
         message: 'Not found user by id',
         status: statusCodeEnum.NOT_FOUND,
       });
+    }
+
+    const tasks = await taskModel.find({ userId: user.id });
+
+    if (tasks && tasks.length > 0) {
+      const pendingTasks = tasks.filter(
+        (task) => task.status === taskStatusEnum.PENDING
+      );
+
+      if (pendingTasks.length === 5) {
+        return errorResponseModel({
+          req,
+          res,
+          message: 'max_limit_five_tasks',
+          status: statusCodeEnum.BAD_REQUEST,
+        });
+      }
     }
 
     let taskData: CreateTaskDto = {
