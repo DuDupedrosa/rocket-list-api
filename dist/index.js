@@ -11,7 +11,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 // src/index.js
 const express_1 = __importDefault(require("express"));
@@ -28,25 +27,11 @@ const app = (0, express_1.default)();
 const port = process.env.PORT || 3000;
 const mongooseConnection = process.env.PRIVATE_MONGOOSE_CONNECTION;
 const expiryDate = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
-// Lê as URLs permitidas do arquivo .env
-const allowedOrigins = ((_a = process.env.ALLOWED_ORIGINS) === null || _a === void 0 ? void 0 : _a.split(',')) || [];
-// Função para verificar se a origem está na lista de permitidas
-const corsOptions = {
-    origin: (origin, callback) => {
-        if (origin && allowedOrigins.includes(origin)) {
-            callback(null, true);
-        }
-        else if (!origin) {
-            // Permite solicitações sem origem (como cURL ou Postman)
-            callback(null, true);
-        }
-        else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-};
+const allowlist = [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://rocket-list.vercel.app',
+];
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         if (!mongooseConnection)
@@ -54,6 +39,17 @@ function main() {
         yield mongoose_1.default.connect(mongooseConnection);
     });
 }
+const corsOptionsDelegate = (req, callback) => {
+    const origin = req.header('Origin');
+    let corsOptions;
+    if (origin && allowlist.includes(origin)) {
+        corsOptions = { origin: true }; // Reflete a origem solicitada na resposta CORS
+    }
+    else {
+        corsOptions = { origin: false }; // Desativa CORS para esta solicitação
+    }
+    callback(null, corsOptions); // Callback espera dois parâmetros: erro e opções
+};
 main().catch((err) => console.log(err));
 app.use((0, helmet_1.default)());
 app.disable('x-powered-by');
@@ -65,8 +61,8 @@ app.use((0, express_session_1.default)({
     saveUninitialized: false,
     cookie: { secure: true, httpOnly: true, expires: expiryDate },
 }));
+app.use((0, cors_1.default)(corsOptionsDelegate));
 app.use(routes_1.default);
-app.use((0, cors_1.default)(corsOptions));
 (0, swagger_1.setupSwagger)(app);
 app.listen(port, () => {
     console.log(`[server]: Server is running at http://localhost:${port}`);

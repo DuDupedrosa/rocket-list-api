@@ -1,29 +1,30 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validatePassword = validatePassword;
+const Password_1 = require("../enums/Password");
 const erroPasswordData = {
     HAS_UPPER_CASE: {
-        enum: 1,
+        enum: Password_1.passwordErroValidateEnum.HAS_UPPER_CASE,
         key: 'required_one_uppercase.',
     },
     HAS_LOWER_CASE: {
-        enum: 2,
+        enum: Password_1.passwordErroValidateEnum.HAS_LOWER_CASE,
         key: 'required_one_lowercase',
     },
     HAS_DIGITS: {
-        enum: 3,
+        enum: Password_1.passwordErroValidateEnum.HAS_DIGITS,
         key: 'required_one_digit',
     },
     HAS_SPECIAL_CHARACTER: {
-        enum: 4,
+        enum: Password_1.passwordErroValidateEnum.HAS_SPECIAL_CHARACTER,
         key: 'required_one_special_character',
     },
     HAS_MIN_DIFFERENT_CHAR: {
-        enum: 5,
+        enum: Password_1.passwordErroValidateEnum.HAS_MIN_DIFFERENT_CHAR,
         key: 'required_min_six_different_characters',
     },
     HAS_MIN_LENGTH: {
-        enum: 6,
+        enum: Password_1.passwordErroValidateEnum.HAS_MIN_LENGTH,
         key: 'required_min_eight_characters',
     },
 };

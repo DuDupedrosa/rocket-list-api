@@ -362,18 +362,18 @@ router.delete('/user/:id', validateTokenMiddleware_1.authenticateToken, userCont
 router.post('/task', validateTokenMiddleware_1.authenticateToken, taskController.createTaskController);
 /**
  * @swagger
- * /task/{id}:
+ * /task/{userId}:
  *   get:
  *     tags:
  *       - Task
  *     summary: Consultar os dados da tarefa pelo id
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: userId
  *         required: true
  *         schema:
  *           type: string
- *         description: O ID da tarefa
+ *         description: Id do usuário
  *       - in: query
  *         name: status
  *         required: true

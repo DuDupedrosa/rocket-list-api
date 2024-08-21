@@ -39,13 +39,23 @@ function userRegisterAsync(req, res) {
                 return (0, validatorSchemaResponse_1.validatorSchemaResponse)({ req, res, error });
             }
             const { email, name, password, lastName } = req.body;
+            const alreadyRegisterEmail = yield userModel_1.default.findOne({ email });
+            // validando se já existe um usuário com o email informado
+            if (alreadyRegisterEmail) {
+                return (0, responseModel_1.errorResponseModel)({
+                    req,
+                    res,
+                    status: StatusCodeEnum_1.statusCodeEnum.BAD_REQUEST,
+                    message: 'email_already_register',
+                });
+            }
             // validating email
             if (!(0, validateEmail_1.validateEmail)(email)) {
                 return (0, responseModel_1.errorResponseModel)({
                     req,
                     res,
                     status: StatusCodeEnum_1.statusCodeEnum.BAD_REQUEST,
-                    message: 'Invalid e-mail.',
+                    message: 'invalid_email',
                 });
             }
             // validating password
@@ -73,7 +83,7 @@ function userRegisterAsync(req, res) {
                     req,
                     res,
                     status: StatusCodeEnum_1.statusCodeEnum.BAD_REQUEST,
-                    message: 'A user id is required',
+                    message: 'user_id_required',
                 });
             }
             // create user in data base
@@ -121,7 +131,7 @@ function userSignInAsync(req, res) {
                 return (0, responseModel_1.errorResponseModel)({
                     req,
                     res,
-                    message: 'Invalid e-mail or password.',
+                    message: 'invalid_email_or_password',
                     status: StatusCodeEnum_1.statusCodeEnum.NOT_FOUND,
                 });
             }
@@ -130,7 +140,7 @@ function userSignInAsync(req, res) {
                 return (0, responseModel_1.errorResponseModel)({
                     req,
                     res,
-                    message: 'Invalid e-mail or password.',
+                    message: 'invalid_email_or_password',
                     status: StatusCodeEnum_1.statusCodeEnum.NOT_FOUND,
                 });
             }

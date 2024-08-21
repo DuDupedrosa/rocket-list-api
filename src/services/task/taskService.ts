@@ -93,7 +93,9 @@ export async function createTaskAsync(req: Request, res: Response) {
 export async function getTaskByUserIdAsync(req: Request, res: Response) {
   try {
     const { userId } = req.params;
-    const { status } = req.query;
+    const { status, page, limit } = req.query;
+    const pageLimit: number = limit ? Number(limit) : 5;
+    const pageNumber: number = page ? Number(page) : 1;
 
     const user = await userModel.findOne({ id: userId });
 
@@ -106,18 +108,28 @@ export async function getTaskByUserIdAsync(req: Request, res: Response) {
       });
     }
 
-    let tasks;
-
-    if (!status) {
-      tasks = await taskModel.find({ userId: user.id });
-    } else {
-      tasks = await taskModel.find({ userId: user.id, status });
+    const query: any = { userId: user.id };
+    if (status) {
+      query.status = status;
     }
+
+    const totalItems = await taskModel.countDocuments(query);
+    const totalPages = Math.ceil(totalItems / pageLimit);
+
+    const tasks = await taskModel
+      .find(query)
+      .skip((pageNumber - 1) * pageLimit)
+      .limit(pageLimit);
 
     return responseModel({
       req,
       res,
-      content: tasks,
+      content: {
+        items: tasks,
+        totalItems,
+        totalPages,
+        currentPage: pageNumber,
+      },
       status: statusCodeEnum.SUCCESS,
     });
   } catch (err) {
@@ -125,7 +137,7 @@ export async function getTaskByUserIdAsync(req: Request, res: Response) {
       req,
       res,
       status: statusCodeEnum.INTERNAL_SERVER_ERRO,
-      message: `getTaskByStatusAsync|${err}`,
+      message: `getTaskByUserIdAsync|${err}`,
     });
   }
 }

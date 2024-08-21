@@ -24,6 +24,7 @@ const StatusCodeEnum_1 = require("../../helpers/enums/StatusCodeEnum");
 const uuid_1 = require("uuid");
 const taskModel_1 = require("../../models/task/taskModel");
 const updateTaskValidatorSchema_1 = require("../../validatorSchemas/task/updateTaskValidatorSchema");
+const TaskEnum_1 = require("../../helpers/enums/TaskEnum");
 function createTaskAsync(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -41,6 +42,18 @@ function createTaskAsync(req, res) {
                     message: 'Not found user by id',
                     status: StatusCodeEnum_1.statusCodeEnum.NOT_FOUND,
                 });
+            }
+            const tasks = yield taskModel_1.taskModel.find({ userId: user.id });
+            if (tasks && tasks.length > 0) {
+                const pendingTasks = tasks.filter((task) => task.status === TaskEnum_1.taskStatusEnum.PENDING);
+                if (pendingTasks.length === 5) {
+                    return (0, responseModel_1.errorResponseModel)({
+                        req,
+                        res,
+                        message: 'max_limit_five_tasks',
+                        status: StatusCodeEnum_1.statusCodeEnum.BAD_REQUEST,
+                    });
+                }
             }
             let taskData = {
                 id: (0, uuid_1.v4)(),
@@ -82,7 +95,9 @@ function getTaskByUserIdAsync(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const { userId } = req.params;
-            const { status } = req.query;
+            const { status, page, limit } = req.query;
+            const pageLimit = limit ? Number(limit) : 5;
+            const pageNumber = page ? Number(page) : 1;
             const user = yield userModel_1.default.findOne({ id: userId });
             if (!user) {
                 return (0, responseModel_1.errorResponseModel)({
@@ -92,17 +107,25 @@ function getTaskByUserIdAsync(req, res) {
                     status: StatusCodeEnum_1.statusCodeEnum.NOT_FOUND,
                 });
             }
-            let tasks;
-            if (!status) {
-                tasks = yield taskModel_1.taskModel.find({ userId: user.id });
+            const query = { userId: user.id };
+            if (status) {
+                query.status = status;
             }
-            else {
-                tasks = yield taskModel_1.taskModel.find({ userId: user.id, status });
-            }
+            const totalItems = yield taskModel_1.taskModel.countDocuments(query);
+            const totalPages = Math.ceil(totalItems / pageLimit);
+            const tasks = yield taskModel_1.taskModel
+                .find(query)
+                .skip((pageNumber - 1) * pageLimit)
+                .limit(pageLimit);
             return (0, responseModel_1.responseModel)({
                 req,
                 res,
-                content: tasks,
+                content: {
+                    items: tasks,
+                    totalItems,
+                    totalPages,
+                    currentPage: pageNumber,
+                },
                 status: StatusCodeEnum_1.statusCodeEnum.SUCCESS,
             });
         }
@@ -111,7 +134,7 @@ function getTaskByUserIdAsync(req, res) {
                 req,
                 res,
                 status: StatusCodeEnum_1.statusCodeEnum.INTERNAL_SERVER_ERRO,
-                message: `getTaskByStatusAsync|${err}`,
+                message: `getTaskByUserIdAsync|${err}`,
             });
         }
     });
