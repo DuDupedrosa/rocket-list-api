@@ -2,6 +2,7 @@ import express from 'express';
 import * as authController from './controllers/auth/authController';
 import * as userController from './controllers/user/userController';
 import * as taskController from './controllers/task/taskController';
+import * as tokenController from './controllers/token/tokenController';
 import { authenticateToken } from './middleware/validateTokenMiddleware';
 
 //
@@ -526,6 +527,35 @@ router.delete(
   '/task/:id/:userId',
   authenticateToken,
   taskController.deleteTaskController
+);
+
+/**
+ * @swagger
+ * /validate-token:
+ *   get:
+ *     tags:
+ *       - Token
+ *     summary: Validar se o token da requisição é válido
+ *     responses:
+ *       200:
+ *         description: Token válido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 validToken:
+ *                   type: boolean
+ *                   example: true
+ *       401:
+ *         description: Não autorizado
+ *       500:
+ *         description: Erro interno
+ */
+router.get(
+  '/validate-token',
+  authenticateToken,
+  tokenController.validTokenController
 );
 
 export default router;
