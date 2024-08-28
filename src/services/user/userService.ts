@@ -8,6 +8,7 @@ import {
 } from '../../helpers/methods/responseModel';
 import { updateUserValidatorSchema } from '../../validatorSchemas/user/updateUserValidatorSchema';
 import { validatorSchemaResponse } from '../../helpers/methods/validatorSchemaResponse';
+import { taskModel } from '../../models/task/taskModel';
 
 export async function getUserAsync(req: Request, res: Response) {
   try {
@@ -136,10 +137,9 @@ export async function deleteUserAsync(req: Request, res: Response) {
         message: 'Required user id params',
       });
     }
+    const user = await userModel.findOne({ id: userId });
 
-    const userDeleted = await userModel.findOneAndDelete({ id: userId });
-
-    if (!userDeleted) {
+    if (!user) {
       return errorResponseModel({
         req,
         res,
@@ -147,6 +147,9 @@ export async function deleteUserAsync(req: Request, res: Response) {
         message: 'Not found user',
       });
     }
+
+    const userDeleted = await userModel.deleteOne({ id: userId });
+    const userTasksDeleted = await taskModel.deleteMany({ userId: userId });
 
     return responseModel({
       req,

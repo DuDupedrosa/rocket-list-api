@@ -30,6 +30,7 @@ const express_1 = __importDefault(require("express"));
 const authController = __importStar(require("./controllers/auth/authController"));
 const userController = __importStar(require("./controllers/user/userController"));
 const taskController = __importStar(require("./controllers/task/taskController"));
+const tokenController = __importStar(require("./controllers/token/tokenController"));
 const validateTokenMiddleware_1 = require("./middleware/validateTokenMiddleware");
 //
 const router = express_1.default.Router();
@@ -531,4 +532,28 @@ router.put('/task', validateTokenMiddleware_1.authenticateToken, taskController.
  *         description: Erro interno
  */
 router.delete('/task/:id/:userId', validateTokenMiddleware_1.authenticateToken, taskController.deleteTaskController);
+/**
+ * @swagger
+ * /validate-token:
+ *   get:
+ *     tags:
+ *       - Token
+ *     summary: Validar se o token da requisição é válido
+ *     responses:
+ *       200:
+ *         description: Token válido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 validToken:
+ *                   type: boolean
+ *                   example: true
+ *       401:
+ *         description: Não autorizado
+ *       500:
+ *         description: Erro interno
+ */
+router.get('/validate-token', validateTokenMiddleware_1.authenticateToken, tokenController.validTokenController);
 exports.default = router;
