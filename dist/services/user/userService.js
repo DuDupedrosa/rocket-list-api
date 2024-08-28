@@ -15,11 +15,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUserAsync = getUserAsync;
 exports.updateUserAsync = updateUserAsync;
 exports.deleteUserAsync = deleteUserAsync;
+exports.userChangePasswordAsync = userChangePasswordAsync;
 const userModel_1 = __importDefault(require("../../models/user/userModel"));
 const StatusCodeEnum_1 = require("../../helpers/enums/StatusCodeEnum");
 const responseModel_1 = require("../../helpers/methods/responseModel");
 const updateUserValidatorSchema_1 = require("../../validatorSchemas/user/updateUserValidatorSchema");
 const validatorSchemaResponse_1 = require("../../helpers/methods/validatorSchemaResponse");
+const taskModel_1 = require("../../models/task/taskModel");
+const bcrypt_1 = __importDefault(require("bcrypt"));
+const userChangePasswordValidatorSchema_1 = require("../../validatorSchemas/user/userChangePasswordValidatorSchema");
 function getUserAsync(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -133,8 +137,8 @@ function deleteUserAsync(req, res) {
                     message: 'Required user id params',
                 });
             }
-            const userDeleted = yield userModel_1.default.findOneAndDelete({ id: userId });
-            if (!userDeleted) {
+            const user = yield userModel_1.default.findOne({ id: userId });
+            if (!user) {
                 return (0, responseModel_1.errorResponseModel)({
                     req,
                     res,
@@ -142,6 +146,8 @@ function deleteUserAsync(req, res) {
                     message: 'Not found user',
                 });
             }
+            const userDeleted = yield userModel_1.default.deleteOne({ id: userId });
+            const userTasksDeleted = yield taskModel_1.taskModel.deleteMany({ userId: userId });
             return (0, responseModel_1.responseModel)({
                 req,
                 res,
@@ -154,7 +160,57 @@ function deleteUserAsync(req, res) {
                 req,
                 res,
                 status: StatusCodeEnum_1.statusCodeEnum.INTERNAL_SERVER_ERRO,
-                message: 'deleteUserAsync|${err}',
+                message: `deleteUserAsync|${err}`,
+            });
+        }
+    });
+}
+function userChangePasswordAsync(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { error } = userChangePasswordValidatorSchema_1.userChangePasswordValidatorSchema.validate(req.body);
+            if (error) {
+                return (0, validatorSchemaResponse_1.validatorSchemaResponse)({ req, res, error });
+            }
+            const { userId, currentPassword, newPassword } = req.body;
+            const user = yield userModel_1.default.findOne({ id: userId });
+            if (!user) {
+                return (0, responseModel_1.errorResponseModel)({
+                    req,
+                    res,
+                    status: StatusCodeEnum_1.statusCodeEnum.NOT_FOUND,
+                    message: 'user_not_found',
+                });
+            }
+            const sameCurrentPassword = yield bcrypt_1.default.compare(currentPassword, user.password);
+            if (!sameCurrentPassword) {
+                return (0, responseModel_1.errorResponseModel)({
+                    req,
+                    res,
+                    status: StatusCodeEnum_1.statusCodeEnum.BAD_REQUEST,
+                    message: 'invalid_current_password',
+                });
+            }
+            const hashedPassword = yield bcrypt_1.default.hash(newPassword, 10);
+            const userUpdated = yield userModel_1.default.findOneAndUpdate({ id: userId }, {
+                password: hashedPassword,
+            }, {
+                new: true,
+                runValidators: true,
+            });
+            return (0, responseModel_1.responseModel)({
+                req,
+                res,
+                status: StatusCodeEnum_1.statusCodeEnum.SUCCESS,
+                content: 'change_password_success',
+            });
+        }
+        catch (err) {
+            return (0, responseModel_1.errorResponseModel)({
+                req,
+                res,
+                status: StatusCodeEnum_1.statusCodeEnum.INTERNAL_SERVER_ERRO,
+                message: `userChangePassword|${err}`,
             });
         }
     });

@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUserController = getUserController;
 exports.updateUserController = updateUserController;
 exports.deleteUserController = deleteUserController;
+exports.userChangePasswordController = userChangePasswordController;
 const userService_1 = require("../../services/user/userService");
 function getUserController(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -26,5 +27,10 @@ function updateUserController(req, res) {
 function deleteUserController(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         yield (0, userService_1.deleteUserAsync)(req, res);
+    });
+}
+function userChangePasswordController(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield (0, userService_1.userChangePasswordAsync)(req, res);
     });
 }

@@ -11,3 +11,9 @@ export type UpdateUserResponseDto = {
   id: string;
   lastName: string | null | undefined;
 };
+
+export type ChangePasswordDto = {
+  userId: string;
+  currentPassword: string;
+  newPassword: string;
+};

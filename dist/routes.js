@@ -288,6 +288,145 @@ router.put('/user', validateTokenMiddleware_1.authenticateToken, userController.
 router.delete('/user/:id', validateTokenMiddleware_1.authenticateToken, userController.deleteUserController);
 /**
  * @swagger
+ * /auth/signin:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Efetuar login
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *              - password
+ *              - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: "johndoe@example.com"
+ *               password:
+ *                 type: string
+ *                 example: "Password123!"
+ *     responses:
+ *       200:
+ *         description: Usuário logado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   example: "jsonwebtoken"
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     name:
+ *                       type: string
+ *                       example: "johndoe"
+ *                     email:
+ *                       type: string
+ *                       example: "johndoe@example.com"
+ *                     id:
+ *                       type: string
+ *                       example: "userId"
+ *                     lastName:
+ *                       type: string
+ *                       nullable: true
+ *                       example: "lastName"
+ *       400:
+ *         description: Erro na requisição (validação dos dados)
+ *       404:
+ *         description: Credenciais inválidas
+ *       500:
+ *         description: Erro interno
+ */
+router.post('/auth/signin', authController.userSignInController);
+/**
+ * @swagger
+ * /user/{id}:
+ *   get:
+ *     tags:
+ *       - User
+ *     summary: Consultar os dados do usuário pelo id
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Informações do usuário retornadas com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   example: "taskId"
+ *                 name:
+ *                   type: string
+ *                   example: "johndoe"
+ *                 email:
+ *                   type: string
+ *                   example: "johndoe@example.com"
+ *                 lastName:
+ *                   type: string
+ *                   example: "lastName"
+ *       404:
+ *         description: Usuário não encontrado
+ *       401:
+ *         description: Não autorizado
+ *       500:
+ *         description: Erro interno
+ */
+router.get('/user/:id', validateTokenMiddleware_1.authenticateToken, userController.getUserController);
+/**
+ * @swagger
+ * /user/change-password:
+ *   put:
+ *     tags:
+ *       - User
+ *     summary: Alterar a senha
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *              - currentPassword
+ *              - newPassword
+ *              - userId
+ *             properties:
+ *               currentPassword:
+ *                 type: string
+ *                 example: "currentPassword"
+ *               newPassword:
+ *                 type: string
+ *                 example: "newPassword"
+ *               userId:
+ *                 type: string
+ *                 example: "userId"
+ *     responses:
+ *       200:
+ *         description: Senha alterada com sucesso
+ *       400:
+ *         description: Erro na requisição (validação dos dados)
+ *       404:
+ *         description: Usuário (userId) não encontrado
+ *       401:
+ *         description: Não autorizado
+ *       500:
+ *         description: Erro interno
+ */
+router.put('/user/change-password', validateTokenMiddleware_1.authenticateToken, userController.userChangePasswordController);
+/**
+ * @swagger
  * /task:
  *   post:
  *     tags:

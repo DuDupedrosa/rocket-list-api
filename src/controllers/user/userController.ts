@@ -3,6 +3,7 @@ import {
   getUserAsync,
   updateUserAsync,
   deleteUserAsync,
+  userChangePasswordAsync,
 } from '../../services/user/userService';
 
 export async function getUserController(req: Request, res: Response) {
@@ -15,4 +16,11 @@ export async function updateUserController(req: Request, res: Response) {
 
 export async function deleteUserController(req: Request, res: Response) {
   await deleteUserAsync(req, res);
+}
+
+export async function userChangePasswordController(
+  req: Request,
+  res: Response
+) {
+  await userChangePasswordAsync(req, res);
 }
