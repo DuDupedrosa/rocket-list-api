@@ -1,17 +1,17 @@
-import { Request, Response } from 'express';
-import { createTaskValidatorSchema } from '../../validatorSchemas/task/createTaskValidatorSchema';
-import { validatorSchemaResponse } from '../../helpers/methods/validatorSchemaResponse';
-import userModel from '../../models/user/userModel';
+import { Request, Response } from "express";
+import { createTaskValidatorSchema } from "../../validatorSchemas/task/createTaskValidatorSchema";
+import { validatorSchemaResponse } from "../../helpers/methods/validatorSchemaResponse";
+import userModel from "../../models/user/userModel";
 import {
   errorResponseModel,
   responseModel,
-} from '../../helpers/methods/responseModel';
-import { statusCodeEnum } from '../../helpers/enums/StatusCodeEnum';
-import { CreateTaskDto, UpdatedTaskResponseDto } from '../../dtos/task';
-import { v4 as uuidv4 } from 'uuid';
-import { taskModel } from '../../models/task/taskModel';
-import { updateTaskValidatorSchema } from '../../validatorSchemas/task/updateTaskValidatorSchema';
-import { taskStatusEnum } from '../../helpers/enums/TaskEnum';
+} from "../../helpers/methods/responseModel";
+import { statusCodeEnum } from "../../helpers/enums/StatusCodeEnum";
+import { CreateTaskDto, UpdatedTaskResponseDto } from "../../dtos/task";
+import { v4 as uuidv4 } from "uuid";
+import { taskModel } from "../../models/task/taskModel";
+import { updateTaskValidatorSchema } from "../../validatorSchemas/task/updateTaskValidatorSchema";
+import { taskStatusEnum } from "../../helpers/enums/TaskEnum";
 
 export async function createTaskAsync(req: Request, res: Response) {
   try {
@@ -30,7 +30,7 @@ export async function createTaskAsync(req: Request, res: Response) {
       return errorResponseModel({
         req,
         res,
-        message: 'Not found user by id',
+        message: "Not found user by id",
         status: statusCodeEnum.NOT_FOUND,
       });
     }
@@ -46,7 +46,7 @@ export async function createTaskAsync(req: Request, res: Response) {
         return errorResponseModel({
           req,
           res,
-          message: 'max_limit_five_tasks',
+          message: "max_limit_five_tasks",
           status: statusCodeEnum.BAD_REQUEST,
         });
       }
@@ -159,7 +159,7 @@ export async function updateTaskAsync(req: Request, res: Response) {
         req,
         res,
         status: statusCodeEnum.NOT_FOUND,
-        message: 'Not found task by id or br user id',
+        message: "Not found task by id or br user id",
       });
     }
 
@@ -229,7 +229,7 @@ export async function deleteTaskAsync(req: Request, res: Response) {
         req,
         res,
         status: statusCodeEnum.NOT_FOUND,
-        message: 'Not found task by id',
+        message: "Not found task by id",
       });
     }
 
@@ -250,7 +250,7 @@ export async function deleteTaskAsync(req: Request, res: Response) {
         req,
         res,
         status: statusCodeEnum.INTERNAL_SERVER_ERRO,
-        message: 'deleteTaskAsync|ErrorOnDeleteTaskModel',
+        message: "deleteTaskAsync|ErrorOnDeleteTaskModel",
       });
     }
 
@@ -258,7 +258,7 @@ export async function deleteTaskAsync(req: Request, res: Response) {
       req,
       res,
       status: statusCodeEnum.SUCCESS,
-      content: '',
+      content: "",
     });
   } catch (err) {
     return errorResponseModel({
