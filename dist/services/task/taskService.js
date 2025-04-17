@@ -39,7 +39,7 @@ function createTaskAsync(req, res) {
                 return (0, responseModel_1.errorResponseModel)({
                     req,
                     res,
-                    message: 'Not found user by id',
+                    message: "Not found user by id",
                     status: StatusCodeEnum_1.statusCodeEnum.NOT_FOUND,
                 });
             }
@@ -50,7 +50,7 @@ function createTaskAsync(req, res) {
                     return (0, responseModel_1.errorResponseModel)({
                         req,
                         res,
-                        message: 'max_limit_five_tasks',
+                        message: "max_limit_five_tasks",
                         status: StatusCodeEnum_1.statusCodeEnum.BAD_REQUEST,
                     });
                 }
@@ -153,7 +153,7 @@ function updateTaskAsync(req, res) {
                     req,
                     res,
                     status: StatusCodeEnum_1.statusCodeEnum.NOT_FOUND,
-                    message: 'Not found task by id or br user id',
+                    message: "Not found task by id or br user id",
                 });
             }
             // validando se o usuário não está tentando editar a task de outro usuário
@@ -214,7 +214,7 @@ function deleteTaskAsync(req, res) {
                     req,
                     res,
                     status: StatusCodeEnum_1.statusCodeEnum.NOT_FOUND,
-                    message: 'Not found task by id',
+                    message: "Not found task by id",
                 });
             }
             // validando se o usuário não está tentando deletar a task de outro usuário
@@ -232,14 +232,14 @@ function deleteTaskAsync(req, res) {
                     req,
                     res,
                     status: StatusCodeEnum_1.statusCodeEnum.INTERNAL_SERVER_ERRO,
-                    message: 'deleteTaskAsync|ErrorOnDeleteTaskModel',
+                    message: "deleteTaskAsync|ErrorOnDeleteTaskModel",
                 });
             }
             return (0, responseModel_1.responseModel)({
                 req,
                 res,
                 status: StatusCodeEnum_1.statusCodeEnum.SUCCESS,
-                content: '',
+                content: "",
             });
         }
         catch (err) {

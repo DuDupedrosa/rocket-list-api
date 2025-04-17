@@ -1,9 +1,11 @@
-import express from 'express';
-import * as authController from './controllers/auth/authController';
-import * as userController from './controllers/user/userController';
-import * as taskController from './controllers/task/taskController';
-import * as tokenController from './controllers/token/tokenController';
-import { authenticateToken } from './middleware/validateTokenMiddleware';
+import express from "express";
+import * as authController from "./controllers/auth/authController";
+import * as userController from "./controllers/user/userController";
+import * as taskController from "./controllers/task/taskController";
+import * as tokenController from "./controllers/token/tokenController";
+import * as codePdfController from "./controllers/codepdf/codepdfController";
+import { authenticateToken } from "./middleware/validateTokenMiddleware";
+import { upload } from "./multerConfig";
 
 //
 const router = express.Router();
@@ -77,7 +79,7 @@ const router = express.Router();
  *       500:
  *         description: Erro interno
  */
-router.post('/auth/register', authController.userRegisterController);
+router.post("/auth/register", authController.userRegisterController);
 
 /**
  * @swagger
@@ -136,7 +138,7 @@ router.post('/auth/register', authController.userRegisterController);
  *       500:
  *         description: Erro interno
  */
-router.post('/auth/signin', authController.userSignInController);
+router.post("/auth/signin", authController.userSignInController);
 
 /**
  * @swagger
@@ -179,7 +181,7 @@ router.post('/auth/signin', authController.userSignInController);
  *         description: Erro interno
  */
 
-router.get('/user/:id', authenticateToken, userController.getUserController);
+router.get("/user/:id", authenticateToken, userController.getUserController);
 
 /**
  * @swagger
@@ -240,7 +242,7 @@ router.get('/user/:id', authenticateToken, userController.getUserController);
  *       500:
  *         description: Erro interno
  */
-router.put('/user', authenticateToken, userController.updateUserController);
+router.put("/user", authenticateToken, userController.updateUserController);
 
 /**
  * @swagger
@@ -266,7 +268,7 @@ router.put('/user', authenticateToken, userController.updateUserController);
  *         description: Erro interno
  */
 router.delete(
-  '/user/:id',
+  "/user/:id",
   authenticateToken,
   userController.deleteUserController
 );
@@ -328,7 +330,7 @@ router.delete(
  *       500:
  *         description: Erro interno
  */
-router.post('/auth/signin', authController.userSignInController);
+router.post("/auth/signin", authController.userSignInController);
 
 /**
  * @swagger
@@ -371,7 +373,7 @@ router.post('/auth/signin', authController.userSignInController);
  *         description: Erro interno
  */
 
-router.get('/user/:id', authenticateToken, userController.getUserController);
+router.get("/user/:id", authenticateToken, userController.getUserController);
 
 /**
  * @swagger
@@ -413,7 +415,7 @@ router.get('/user/:id', authenticateToken, userController.getUserController);
  *         description: Erro interno
  */
 router.put(
-  '/user/change-password',
+  "/user/change-password",
   authenticateToken,
   userController.userChangePasswordController
 );
@@ -492,7 +494,7 @@ router.put(
  *       500:
  *         description: Erro interno
  */
-router.post('/task', authenticateToken, taskController.createTaskController);
+router.post("/task", authenticateToken, taskController.createTaskController);
 
 /**
  * @swagger
@@ -558,7 +560,7 @@ router.post('/task', authenticateToken, taskController.createTaskController);
  *         description: Erro interno
  */
 router.get(
-  '/task/:userId',
+  "/task/:userId",
   authenticateToken,
   taskController.getTaskByUserIdController
 );
@@ -638,7 +640,7 @@ router.get(
  *       500:
  *         description: Erro interno
  */
-router.put('/task', authenticateToken, taskController.updateTaskController);
+router.put("/task", authenticateToken, taskController.updateTaskController);
 
 /**
  * @swagger
@@ -671,7 +673,7 @@ router.put('/task', authenticateToken, taskController.updateTaskController);
  *         description: Erro interno
  */
 router.delete(
-  '/task/:id/:userId',
+  "/task/:id/:userId",
   authenticateToken,
   taskController.deleteTaskController
 );
@@ -700,9 +702,65 @@ router.delete(
  *         description: Erro interno
  */
 router.get(
-  '/validate-token',
+  "/validate-token",
   authenticateToken,
   tokenController.validTokenController
 );
 
+// projeto do codepdf
+router.post(
+  "/codepdf/add-page-number",
+  upload.single("file"),
+  codePdfController.addPageNumberController
+);
+router.post(
+  "/codepdf/compress",
+  upload.array("file"),
+  codePdfController.compressController
+);
+router.post(
+  "/codepdf/convert-images",
+  upload.array("file"),
+  codePdfController.convertImagesController
+);
+router.post(
+  "/codepdf/lock",
+  upload.single("file"),
+  codePdfController.lockController
+);
+router.post(
+  "/codepdf/merge",
+  upload.array("file"),
+  codePdfController.mergeController
+);
+router.post(
+  "/codepdf/convert-office",
+  upload.single("file"),
+  codePdfController.officeToPdfController
+);
+router.post(
+  "/codepdf/convert-pdf-to-jpg",
+  upload.single("file"),
+  codePdfController.convertPdfToJpgController
+);
+router.post(
+  "/codepdf/rotate",
+  upload.single("file"),
+  codePdfController.rotateController
+);
+router.post(
+  "/codepdf/split",
+  upload.single("file"),
+  codePdfController.splitPdfController
+);
+router.post(
+  "/codepdf/unlock",
+  upload.single("file"),
+  codePdfController.unlockController
+);
+router.post(
+  "/codepdf/watermark",
+  upload.single("file"),
+  codePdfController.watermarkController
+);
 export default router;

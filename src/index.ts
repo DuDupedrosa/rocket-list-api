@@ -1,13 +1,13 @@
 // src/index.js
-import express, { Express, Request, Response } from 'express';
-import dotenv from 'dotenv';
-import router from './routes';
-import mongoose from 'mongoose';
-import helmet from 'helmet';
-import session from 'express-session';
-import 'reflect-metadata';
-import { setupSwagger } from './swagger';
-import cors, { CorsOptions, CorsOptionsDelegate } from 'cors';
+import express, { Express, Request, Response } from "express";
+import dotenv from "dotenv";
+import router from "./routes";
+import mongoose from "mongoose";
+import helmet from "helmet";
+import session from "express-session";
+import "reflect-metadata";
+import { setupSwagger } from "./swagger";
+import cors, { CorsOptions, CorsOptionsDelegate } from "cors";
 
 dotenv.config();
 
@@ -16,9 +16,8 @@ const port = process.env.PORT || 3000;
 const mongooseConnection = process.env.PRIVATE_MONGOOSE_CONNECTION;
 const expiryDate = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 const allowlist: string[] = [
-  'http://localhost:5173',
-  'http://localhost:3000',
-  'https://rocket-list.vercel.app',
+  "https://rocket-list.vercel.app",
+  "https://code-pdf.vercel.app",
 ];
 
 async function main() {
@@ -30,7 +29,7 @@ const corsOptionsDelegate: CorsOptionsDelegate<Request> = (
   req: Request,
   callback: (err: Error | null, options?: CorsOptions) => void
 ) => {
-  const origin = req.header('Origin');
+  const origin = req.header("Origin");
   let corsOptions: CorsOptions;
 
   if (origin && allowlist.includes(origin)) {
@@ -44,12 +43,12 @@ const corsOptionsDelegate: CorsOptionsDelegate<Request> = (
 
 main().catch((err) => console.log(err));
 app.use(helmet());
-app.disable('x-powered-by');
+app.disable("x-powered-by");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   session({
-    secret: 'express secret key course',
+    secret: "express secret key course",
     resave: false,
     saveUninitialized: false,
     cookie: { secure: true, httpOnly: true, expires: expiryDate },

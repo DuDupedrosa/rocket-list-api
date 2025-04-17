@@ -28,9 +28,8 @@ const port = process.env.PORT || 3000;
 const mongooseConnection = process.env.PRIVATE_MONGOOSE_CONNECTION;
 const expiryDate = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 const allowlist = [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'https://rocket-list.vercel.app',
+    "https://rocket-list.vercel.app",
+    "https://code-pdf.vercel.app",
 ];
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -40,7 +39,7 @@ function main() {
     });
 }
 const corsOptionsDelegate = (req, callback) => {
-    const origin = req.header('Origin');
+    const origin = req.header("Origin");
     let corsOptions;
     if (origin && allowlist.includes(origin)) {
         corsOptions = { origin: true }; // Reflete a origem solicitada na resposta CORS
@@ -52,11 +51,11 @@ const corsOptionsDelegate = (req, callback) => {
 };
 main().catch((err) => console.log(err));
 app.use((0, helmet_1.default)());
-app.disable('x-powered-by');
+app.disable("x-powered-by");
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, express_session_1.default)({
-    secret: 'express secret key course',
+    secret: "express secret key course",
     resave: false,
     saveUninitialized: false,
     cookie: { secure: true, httpOnly: true, expires: expiryDate },
