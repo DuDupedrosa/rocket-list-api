@@ -18,6 +18,7 @@ const expiryDate = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 const allowlist: string[] = [
   "https://rocket-list.vercel.app",
   "https://code-pdf.vercel.app",
+  "http://localhost:5173",
 ];
 
 async function main() {
